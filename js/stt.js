@@ -41,7 +41,8 @@ export class SpeechToText {
 
             this.transcriber = await pipeline(
                 'automatic-speech-recognition',
-                'onnx-community/moonshine-base-ONNX', // 'onnx-community/whisper-large-v3-turbo', 
+                'onnx-community/moonshine-base-ONNX',
+               // 'onnx-community/whisper-small', 
                 options
             );
             console.log('Speech-to-text model loaded successfully');
@@ -120,6 +121,7 @@ export class SpeechToText {
                         audioPlayback.style.display = 'block';
                         playbackStatus.textContent = 'Audio ready for playback:';
 
+                        let start = performance.now();
                         let output = await this.transcriber(wavBlobUrl);                        
                         if (output.text === undefined || output.text.length == 0) {
                             console.log('Trying transcription again 1...');
@@ -142,8 +144,9 @@ export class SpeechToText {
                             console.log('Trying transcription again 2...');
                             output = await this.transcriber(wavBlobUrl);
                         }
+                        let end = performance.now();
+                        console.log(`Total STT Execution duration: ${(end - start) / 1000} seconds`);
 
-                        console.log('Transcription output 1:', output);
                         resolve(output.text);
 
                     } catch (error) {

@@ -4,15 +4,20 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Speech to Speech using Moonshine and Kokoro</title>
+    <title>Speech to Speech</title>
     <link id="favicon" rel="icon" href="./img/favicon.svg" type="image/svg+xml">
     <link rel="stylesheet" href="./css/style.css">
     <link rel="stylesheet" href="./css/conversation.css">
     <link rel="stylesheet" href="./css/tabs.css">
+    <script>
+    const scrollToBottom = () => {
+      window.scrollTo(0, document.body.scrollHeight)
+    }
+    </script>
 </head>
 
 <body>
-    <h1>Speech to Speech using Moonshine and Kokoro</h1>
+    <h1>Speech to Speech</h1>
 
     <div class="tabs">
         <div class="tab-buttons">
@@ -49,29 +54,34 @@
         </div>
 
         <div id="settings" class="tab-content">
-            <div class="settings-container">
-                <div class="setting-group">
-                    <label class="setting-label" for="serverUrl">Chat Inference Server URL:</label>
-                    <input type="text" id="serverUrl" class="setting-input"
-                        value="http://localhost:8080/v1/chat/completions">
-                </div>
-                <div class="setting-group">
-                    <label class="setting-label" for="systemPrompt">System Prompt:</label>
-                    <textarea id="systemPrompt" class="setting-input">You are a helpful AI agent.</textarea>
-                </div>
-
-                <div class="setting-group">
-                    <label class="setting-label" for="voiceSelect">Voice:</label>
-                    <select id="voiceSelect" class="setting-input">
-                        <option value="af_heart">Heart (Female)</option>
-                        <option value="af_bella">Bella (Female)</option>
-                        <option value="af_nicole">Nicole (Female)</option>
-                        <option value="am_onyx">Onyx (Male)</option>
-                        <option value="am_vampire">Vampire (Male)</option>
-                        <option value="am_walle">Wall-E (Male)</option>
-                    </select>
-                </div>
-            </div>
+            <form id="settings-form">
+              <div class="settings-container">
+                  <div class="setting-group">
+                      <label class="setting-label" for="serverUrl">Chat Inference Server URL:</label>
+                      <input type="text" id="serverUrl" class="setting-input" name="serverUrl"
+                          value="http://localhost:8080/v1/chat/completions">
+                  </div>
+                  <div class="setting-group">
+                      <label class="setting-label" for="modelName">Model:</label>
+                      <input id="modelName" class="setting-input" name="modelName"/>
+                  </div>
+                  <div class="setting-group">
+                      <label class="setting-label" for="systemPrompt">System Prompt:</label>
+                      <textarea id="systemPrompt" class="setting-input" name="systemPrompt">You are a helpful AI agent.</textarea>
+                  </div>
+                  <div class="setting-group">
+                      <label class="setting-label" for="voiceSelect">Voice:</label>
+                      <select id="voiceSelect" class="setting-input" name="voiceSelect">
+                          <option value="af_heart">Heart (Female)</option>
+                          <option value="af_bella">Bella (Female)</option>
+                          <option value="af_nicole">Nicole (Female)</option>
+                          <option value="am_onyx">Onyx (Male)</option>
+                          <option value="am_vampire">Vampire (Male)</option>
+                          <option value="am_walle">Wall-E (Male)</option>
+                      </select>
+                  </div>
+              </div>
+          </form>
         </div>
         <div id="credits" class="tab-content">
             <div class="credits-container">
@@ -97,6 +107,26 @@
     </div>
 
     <script src="./js/ui.js" type="module"></script>
+    <script>
+    const form = document.querySelector('form');
+    const FORM_DATA = 'FORM-DATA';
+
+    window.addEventListener('DOMContentLoaded', () => {
+        const fromStorage = localStorage.getItem(FORM_DATA);
+        if (!fromStorage) return;
+
+        const json = JSON.parse(fromStorage);
+
+        for (const input of form.querySelectorAll('input')) {
+            input.value = json[input.name];
+        }
+    });
+
+    form.addEventListener('keyup', () => {
+        const formData = Object.fromEntries([...new FormData(form)]);
+        localStorage.setItem(FORM_DATA, JSON.stringify(formData));
+    });
+    </script>
 </body>
 
 </html>

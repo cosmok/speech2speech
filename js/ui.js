@@ -17,11 +17,16 @@ export function displayConversation(conversationHistory) {
         const message = conversationHistory[i];
         const roleClass = message.role === 'user' ? 'user-message' : 'assistant-message';
         const roleLabel = message.role === 'user' ? 'You' : 'Assistant';
+        let content     = message.content;
+        if (message.content.lastIndexOf("Customer:") !== -1) {
+            content = message.content.slice(0, message.content.lastIndexOf("Customer:")) + "<br>" + message.content.slice(message.content.lastIndexOf("Customer:"));
+        }
         conversationHTML += `<div class="${roleClass}">
-            <strong>${roleLabel}:</strong> ${message.content}
+           ${content}
         </div>`;
     }
     transcriptionResult.innerHTML = conversationHTML;
+    scrollToBottom();
 }
 
 function displayTranscriptionError(transcriptionStatus, transcriptionResult, error) {
@@ -81,7 +86,10 @@ document.addEventListener('DOMContentLoaded', async function () {
                 content: "please continue."
             });
             conversation.sendConversationHistory();
+        } else if (event.which === 82 && event.ctrlKey) {
+           toggleButton.click();
         }
+        
     });
 
     toggleButton.addEventListener('click', function () {
@@ -91,7 +99,7 @@ document.addEventListener('DOMContentLoaded', async function () {
             recordingStatus.textContent = 'Recording...';
             recordingIndicator.style.display = 'block';
             transcriptionStatus.textContent = 'Recording in progress...';
-            transcriptionResult.textContent = '';
+            //transcriptionResult.textContent = '';
             recordingStartTime = new Date();
             timerInterval = setInterval(() => updateTimer(recordingStartTime, recordingTimer), 1000);
             updateTimer(recordingStartTime, recordingTimer);

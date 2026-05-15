@@ -42,6 +42,13 @@ export function textToSpeech(text, voice) {
         return;
     }
 
+    if (text.lastIndexOf("Customer:") == -1) {
+        console.warn("No Customer query in text: " + text);
+        my_worker.postMessage({ type: "generate", text: "Thank you and wish you the best!", voice: voice });
+        return text;
+    }
+
+    text = text.substring(text.lastIndexOf("Customer:") + 9);
     text = text.replaceAll("*", "");
     
     // Remove any special Markdown formatting for better speech
@@ -49,8 +56,10 @@ export function textToSpeech(text, voice) {
     text = text.replace(/\*(.*?)\*/g, '$1');     // Italic
     text = text.replace(/`(.*?)`/g, '$1');       // Code
     text = text.replace(/~~(.*?)~~/g, '$1');     // Strikethrough
-    
-    my_worker.postMessage({ type: "generate", text: text, voice: voice });
+    text = text.replace(/Customer:/gm, ''); // Customer
+    if (text.trim() !== '' && text.indexOf("Coach:") !== 0) {
+	    my_worker.postMessage({ type: "generate", text: text, voice: voice });
+    }
     
     return text;
 }
