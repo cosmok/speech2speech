@@ -18,8 +18,8 @@ export function displayConversation(conversationHistory) {
         const roleClass = message.role === 'user' ? 'user-message' : 'assistant-message';
         const roleLabel = message.role === 'user' ? 'You' : 'Assistant';
         let content     = message.content;
-        if (message.content.lastIndexOf("Customer:") !== -1) {
-            content = message.content.slice(0, message.content.lastIndexOf("Customer:")) + "<br>" + message.content.slice(message.content.lastIndexOf("Customer:"));
+        if (message.content.lastIndexOf("Coach:") !== -1) {
+            content = message.content.slice(0, message.content.lastIndexOf("Coach:")) + "<br>" + message.content.slice(message.content.lastIndexOf("Coach:"));
         }
         conversationHTML += `<div class="${roleClass}">
            ${content}

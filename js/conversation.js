@@ -3,6 +3,8 @@ import { textToSpeech, ttsModelReadyPromise } from "./tts.js";
 import { processStreamingText } from "./sentence-detector.js";
 import { displayConversation } from "./ui.js";
 
+
+
 const $ = document.querySelector.bind(document);
 
 export class Conversation {
@@ -16,7 +18,34 @@ export class Conversation {
                 content: "placeholder"
             }
         ];
+        this.initTTT();
     }
+
+    initTTT() {
+      return;
+      this.ttt_worker = new Worker(new URL("./ttt-worker.js", import.meta.url), { type: "module" });
+      const onErrorReceived = (e) => { console.error("TTT Worker error " + e.toString(), e); };
+      this.ttt_worker.addEventListener("message", (message) =>  {
+        this.tttMessageReceived(message);
+      });
+      this.ttt_worker.addEventListener("error", (event) => { 
+         this.onErrorReceived(event);
+      });
+      this.ttt_worker.postMessage({type: 'load'});
+    }
+
+    tttMessageReceived(message) {
+      switch  (message.data.status) {
+        case "ready":
+          console.log("TTT Model is ready")
+          break;
+      case "complete":
+         console.log("TTT Response: " + message.data.output);
+         this.handleTextResponse(message.data.output);
+         break;
+      }
+    }
+
     async initModels() {
         try {
             await Promise.all([
@@ -58,12 +87,14 @@ export class Conversation {
     }
 
     async sendConversationHistory() {
-        let serverUrl = $('#serverUrl').value;
         let system_prompt = $('#systemPrompt').value;
-        let modelName = $('#modelName').value;
-
         this.conversationHistory[0].content = system_prompt;
-
+        await this.getTextResponse();
+    }
+     
+    async getTextResponse() {
+        let serverUrl = $('#serverUrl').value;
+        let modelName = $('#modelName').value;
         const response = await fetch(serverUrl, {
             method: "POST",
             headers: { "Content-Type": "application/json" },
@@ -74,7 +105,13 @@ export class Conversation {
                 "messages": this.conversationHistory
             })
         });
+        const data = await response.json();
+        const response_text = data.choices[0].message.content;
+        await this.handleTextResponse(response_text);
+        //this.ttt_worker.postMessage({type: "generate", data: this.conversationHistory});
+      }
 
+     async handleTextResponse(response_text) {
         //const decoder = new TextDecoder("utf-8");
         //const reader = response.body.getReader();
         let accumulatedText = "";
@@ -83,8 +120,6 @@ export class Conversation {
 
         // This section is for non-streaming mode
         try {
-            const data = await response.json();
-            const response_text = data.choices[0].message.content;
             this.conversationHistory.push({
                 "role": "assistant",
                 "content": response_text

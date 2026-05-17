@@ -117,7 +117,7 @@
 
         const json = JSON.parse(fromStorage);
 
-        for (const input of form.querySelectorAll('input')) {
+        for (const input of form.querySelectorAll('input, textarea')) {
             input.value = json[input.name];
         }
     });

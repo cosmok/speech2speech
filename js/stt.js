@@ -1,4 +1,4 @@
-import { pipeline } from "https://cdn.jsdelivr.net/npm/@huggingface/transformers@3.5.1/dist/transformers.min.js";
+import { pipeline } from "https://cdn.jsdelivr.net/npm/@huggingface/transformers@4.2.0/dist/transformers.min.js";
 
 import { convertAudioBufferToWav, resampleAudio, applyAudioGain } from "./audio-utils.js";
 
@@ -41,8 +41,8 @@ export class SpeechToText {
 
             this.transcriber = await pipeline(
                 'automatic-speech-recognition',
-                'onnx-community/moonshine-base-ONNX',
-               // 'onnx-community/whisper-small', 
+               // 'onnx-community/moonshine-base-ONNX',
+                'onnx-community/whisper-small', 
                 options
             );
             console.log('Speech-to-text model loaded successfully');
