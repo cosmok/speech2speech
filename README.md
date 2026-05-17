@@ -40,8 +40,9 @@ Important: You NEED a local running chat LLM server like llama-server
 In the Settings tab:
 - Set the Chat Inference Server URL to your language model endpoint
 - Configure the System Prompt to control the AI assistant's behavior
-Example Prompt, Sales Coach:
-`
+
+Example Prompt, **Sales Coach**:
+```
 You are helping me practice a sales call.
 
 I am always the Seller.
@@ -83,7 +84,7 @@ Bad example:
 Seller: How much are you charging?
 Customer: It depends on scope and project count.
 Coach: You asked a good pricing question.
-`
+```
 
 ## How to Use
 
